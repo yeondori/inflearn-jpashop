@@ -16,7 +16,7 @@ public class MemberRepositoryTest {
     @Autowired MemberRepository memberRepository;
 
     @Test
-    @Transactional
+    @Transactional // test에 있는 경우 test 이후 rollback된다.
     public void testMember() throws Exception {
         //given
         Member member = new Member();
