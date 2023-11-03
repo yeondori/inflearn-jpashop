@@ -46,5 +46,100 @@ logging:
 ```
 참고로 이런 설정들은 [Spring Boot 매뉴얼](https://spring.io/projects/spring-boot#learn)에서 직접 배워야 한다 ^_^
 
+## Test
+
 데이터 베이스 연동을 확인하기 위해 Member Class와 MemberRepository를 만든 뒤 MemberRepositoryTest를 통해 검증한다.
 여기에서 발생하는 에러는 [github 블로그]()에서 다루고 있다. 
+
+**Member**
+```java
+package jpabook.jpashop;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
+
+@Entity
+@Getter @Setter
+public class Member {
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String username;
+
+}
+```
+
+**MemberRepository**
+```java
+package jpabook.jpashop;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class MemberRepository {
+
+    @PersistenceContext
+    private EntityManager em;
+
+    public Long save(Member member) {
+        em.persist(member);
+        return member.getId();
+    }
+
+    public Member find(Long id) {
+        return em.find(Member.class, id);
+    }
+}
+```
+
+**MemberRepositoryTest**
+```java
+package jpabook.jpashop;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
+import static org.assertj.core.api.Assertions.assertThat;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class MemberRepositoryTest {
+
+    @Autowired MemberRepository memberRepository;
+
+    @Test
+    @Transactional // test에 있는 경우 test 이후 rollback된다.
+    public void testMember() throws Exception {
+        //given
+        Member member = new Member();
+        member.setUsername("memberA");
+
+        //when
+        Long saveId = memberRepository.save(member);
+        Member findMember = memberRepository.find(saveId);
+
+        //then
+        assertThat(findMember.getId()).isEqualTo(member.getId());
+        assertThat(findMember.getUsername()).isEqualTo(member.getUsername());
+        assertThat(findMember).isEqualTo(member);
+    }
+}
+```
+
+참고로 equals HashCode 등이 구현되지 않은 상태에서 `assertThat(findMember).isEqualTo(member);` 를 수행한다면 정상적으로 작동한다.
+같은 transaction 안에서 저장, 조회가 되므로 같은 영속성 컨텍스트에 있고 식별자가 같으므로 같은 것으로 인식되기 때문이다. 
+
+참고로 터미널에서 `./gradlew clean build` 로 깔끔히 지우고 다시 빌드한 뒤, 라이브러리에 들어가 `java -jar `로 jar 파일을 실행시켜주어도 콘솔에서 실행이 가능하다!
+
+또한, 쿼리 파라미터를 남기고 싶은 경우에 application.yml에서 logging level에 `org.hibernate.type: trace`를 추가하면 trace 로그에서 파라미터 확인이 가능하다.
+조금 더 편리하게 보고 싶다면 build.gradle에 `implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'`를 추가해 외부 라이브러리를 사용하는 방법도 있다. 
+그러나 운영 배포 시에는 성능 저하의 원인이 될 수 있으므로 성능 테스트를 해봐야 한다!
