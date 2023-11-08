@@ -5,4 +5,17 @@
 
 ---
 
+## 프로젝트 환경
+![img](https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white) ![img](https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white) ![Spring Boot](https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+- **Project**: Gradle
+- **Language**: Java
+- **Spring Boot**: 3.1.5
+- **Java**: 17
+- **Dependencies**: Lombok, Spring Web, Thymeleaf, Spring Data JPA, H2 Database
+
+--- 
+
+## 강의 내용
+
 [섹션 1. 프로젝트 환경설정](docs/section01.md)
+[섹션 2. 도메인 분석 설계](docs/section02.md)
