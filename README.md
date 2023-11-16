@@ -27,5 +27,5 @@
 
 [섹션 5. 상품 도메인 개발](docs/section05.md)   
 
-[섹션 6. 주문 도메인 개발](docs/section05.md)   
+[섹션 6. 주문 도메인 개발](docs/section06.md)   
 
