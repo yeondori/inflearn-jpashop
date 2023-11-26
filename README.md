@@ -31,4 +31,4 @@
 
 [섹션 6. 주문 도메인 개발](docs/section06.md)   
 
-[섹션 7. 웹 계층 개발](docs/section06.md)
+[섹션 7. 웹 계층 개발](docs/section07.md)
